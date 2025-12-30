@@ -73,7 +73,6 @@ class WorkoutDetailScreen extends StatelessWidget {
                   },
                 ),
               ),
-
               // 4. GLASS START BUTTON
               Padding(
                 padding: const EdgeInsets.all(16.0),
