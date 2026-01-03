@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../services/database_service.dart'; // <--- Import for the database
 
 class WorkoutDetailScreen extends StatelessWidget {
   final String title;
@@ -73,7 +74,8 @@ class WorkoutDetailScreen extends StatelessWidget {
                   },
                 ),
               ),
-              // 4. GLASS START BUTTON
+
+              // 4. GLASS START/SAVE BUTTON
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ClipRRect(
@@ -90,10 +92,40 @@ class WorkoutDetailScreen extends StatelessWidget {
                         ),
                       ),
                       child: ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.play_arrow_rounded, size: 28),
+                        // ---------------------------------------------
+                        // THIS IS THE NEW DATABASE LOGIC YOU ASKED FOR
+                        // ---------------------------------------------
+                        onPressed: () async {
+                          // 1. Create some test data (We will make this real later)
+                          List<Map<String, dynamic>> testExercises = [
+                            {"name": "Bench Press", "weight": 60, "reps": 12},
+                            {"name": "Flys", "weight": 20, "reps": 15},
+                          ];
+
+                          // 2. Call your new Service
+                          await DatabaseService().saveWorkoutLog(
+                            title, // Uses the title variable from this screen
+                            testExercises,
+                          );
+
+                          // 3. Show a message
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Workout Saved to Database!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          }
+                        },
+
+                        // ---------------------------------------------
+                        icon: const Icon(
+                          Icons.check_circle,
+                          size: 28,
+                        ), // Changed icon to checkmark
                         label: const Text(
-                          'START WORKOUT',
+                          'SAVE WORKOUT', // Changed text to match action
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -187,7 +219,6 @@ class _GlassExerciseTileState extends State<GlassExerciseTile> {
                     });
                   },
                 ),
-
                 if (!isCompleted)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
