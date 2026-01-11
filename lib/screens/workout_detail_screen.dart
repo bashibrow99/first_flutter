@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../services/database_service.dart'; // <--- Import for the database
+import '../services/database_service.dart';
 
 class WorkoutDetailScreen extends StatelessWidget {
   final String title;
@@ -38,7 +38,10 @@ class WorkoutDetailScreen extends StatelessWidget {
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Container(color: Colors.black.withOpacity(0.4)),
+            child: Container(
+              // FIXED: Updated from withOpacity to withValues
+              color: Colors.black.withValues(alpha: 0.4),
+            ),
           ),
         ),
       ),
@@ -85,26 +88,25 @@ class WorkoutDetailScreen extends StatelessWidget {
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
+                        // FIXED: Updated from withOpacity to withValues
+                        color: Colors.white.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
+                          // FIXED: Updated from withOpacity to withValues
+                          color: Colors.white.withValues(alpha: 0.2),
                         ),
                       ),
                       child: ElevatedButton.icon(
-                        // ---------------------------------------------
-                        // THIS IS THE NEW DATABASE LOGIC YOU ASKED FOR
-                        // ---------------------------------------------
                         onPressed: () async {
-                          // 1. Create some test data (We will make this real later)
+                          // 1. Create some test data
                           List<Map<String, dynamic>> testExercises = [
                             {"name": "Bench Press", "weight": 60, "reps": 12},
                             {"name": "Flys", "weight": 20, "reps": 15},
                           ];
 
-                          // 2. Call your new Service
+                          // 2. Call your Service
                           await DatabaseService().saveWorkoutLog(
-                            title, // Uses the title variable from this screen
+                            title,
                             testExercises,
                           );
 
@@ -118,14 +120,9 @@ class WorkoutDetailScreen extends StatelessWidget {
                             );
                           }
                         },
-
-                        // ---------------------------------------------
-                        icon: const Icon(
-                          Icons.check_circle,
-                          size: 28,
-                        ), // Changed icon to checkmark
+                        icon: const Icon(Icons.check_circle, size: 28),
                         label: const Text(
-                          'SAVE WORKOUT', // Changed text to match action
+                          'SAVE WORKOUT',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -181,15 +178,16 @@ class _GlassExerciseTileState extends State<GlassExerciseTile> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              // If done, turn slightly Green. If not, stay Glassy.
+              // FIXED: Updated logic with .withValues
               color: isCompleted
-                  ? Colors.green.withOpacity(0.2)
-                  : Colors.white.withOpacity(0.05),
+                  ? Colors.green.withValues(alpha: 0.2)
+                  : Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
+                // FIXED: Updated logic with .withValues
                 color: isCompleted
-                    ? Colors.green.withOpacity(0.5)
-                    : Colors.white.withOpacity(0.1),
+                    ? Colors.green.withValues(alpha: 0.5)
+                    : Colors.white.withValues(alpha: 0.1),
                 width: 1.5,
               ),
             ),
@@ -243,7 +241,8 @@ class _GlassExerciseTileState extends State<GlassExerciseTile> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.4), // Darker for visibility
+          // FIXED: Updated from withOpacity to withValues
+          color: Colors.black.withValues(alpha: 0.4),
           borderRadius: BorderRadius.circular(12),
         ),
         child: TextField(
@@ -253,7 +252,8 @@ class _GlassExerciseTileState extends State<GlassExerciseTile> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              // FIXED: Updated from withOpacity to withValues
+              color: Colors.white.withValues(alpha: 0.5),
               fontSize: 14,
             ),
             border: InputBorder.none,

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart'; // <--- THIS LINE WAS MISSING
 
 class DatabaseService {
   // Connect to the "workouts" collection in the database
@@ -17,6 +18,6 @@ class DatabaseService {
       'userId': 'dilhara_123', // Hardcoded for now
     });
 
-    print("✅ Workout Saved to Firebase!");
+    debugPrint("✅ Workout Saved to Firebase!");
   }
 }
