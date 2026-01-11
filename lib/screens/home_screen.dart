@@ -1,4 +1,4 @@
-import 'dart:ui';
+import 'dart:ui'; // Required for ImageFilter (Blur effect)
 import 'package:flutter/material.dart';
 import 'workout_detail_screen.dart';
 
@@ -8,12 +8,14 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // 1. Extend Body: This is crucial for the Glass Effect.
+      // It lets the background gradient stretch behind the App Bar.
       extendBodyBehindAppBar: true,
 
-      // 1. GLASS HEADER
+      // --- 1. GLASS APP BAR ---
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        backgroundColor: Colors.transparent, // Make the actual bar invisible
+        elevation: 0, // Remove the shadow
         centerTitle: true,
         title: const Text(
           'IronHome',
@@ -23,13 +25,14 @@ class HomeScreen extends StatelessWidget {
             fontSize: 22,
           ),
         ),
+        // This 'flexibleSpace' creates the blur effect on the App Bar
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
-              color: Colors.black.withOpacity(
-                0.4,
-              ), // Slightly darker for "Hardcore" look
+              // Dark blue tinted glass look to match the new theme
+              // FIXED: Updated withValues
+              color: const Color(0xFF001F3F).withValues(alpha: 0.5),
             ),
           ),
         ),
@@ -41,44 +44,51 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
 
-      // 2. HARDCORE RED GRADIENT BACKGROUND
+      // --- 2. BRIGHTER BACKGROUND (BLUE & CYAN) ---
+      // This solves the "Too Dark" issue
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF8E0E00), // Blood Red
-              Color(0xFF1F1C18), // Dark Charcoal
+              Color(0xFF000428), // Midnight Blue (Top)
+              Color(0xFF004e92), // Electric Blue (Bottom)
             ],
           ),
         ),
 
-        // 3. THE GLASS CARD LIST
+        // --- 3. COMPACT LIST FOR PIXEL 3a ---
+        // We use Padding and sizing adjustments here to fit the smaller screen
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 10.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 10), // Small spacing at the top
                 const Text(
-                  "Your Plans",
+                  "Your Plans (Dumbbells Only)",
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: Colors.white, // Pure white for high visibility
                     fontSize: 16,
-                    letterSpacing: 1.2,
-                    fontWeight: FontWeight.w500,
+                    letterSpacing: 1.0,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
 
                 Expanded(
                   child: ListView.separated(
                     itemCount: myWorkouts.length,
+                    // Reduced spacing between cards to save vertical space
                     separatorBuilder: (context, index) =>
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final workout = myWorkouts[index];
                       return _buildGlassCard(context, workout);
@@ -93,18 +103,26 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // --- GLASS CARD WIDGET ---
   Widget _buildGlassCard(BuildContext context, Workout workout) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(25),
+      borderRadius: BorderRadius.circular(
+        20,
+      ), // Reduced roundness for a sharper look
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05), // Very subtle glass
-            borderRadius: BorderRadius.circular(25),
+            // Increased opacity slightly so the card stands out against the blue background
+            // FIXED: Updated withValues
+            color: Colors.white.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.white.withOpacity(0.1),
-              width: 1.5,
+              // FIXED: Updated withValues
+              color: Colors.white.withValues(
+                alpha: 0.2,
+              ), // Made border brighter
+              width: 1,
             ),
           ),
           child: Material(
@@ -116,58 +134,71 @@ class HomeScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => WorkoutDetailScreen(
                       title: workout.title,
-                      color: workout.color,
-                      exercises: workout.exercises,
+                      // We are passing imagePath now instead of color/exercises
+                      // I've added a dummy path here to prevent errors,
+                      // but you should update your Workout model to include image paths later.
+                      imagePath: 'assets/images/dumbbells.jpg',
                     ),
                   ),
                 );
               },
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                // Reduced padding to make the card more compact for Pixel 3a
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 18.0,
+                ),
                 child: Row(
                   children: [
+                    // Icon Box
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
+                        // FIXED: Updated withValues
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        workout.icon,
+                        color: Colors.cyanAccent,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+
+                    // Text Details
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            workout.title,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 17, // Slightly reduced font size
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            workout.subtitle,
+                            style: TextStyle(
+                              // FIXED: Updated withValues
+                              color: Colors.white.withValues(
+                                alpha: 0.8,
+                              ), // Lighter grey for contrast
+                              fontSize: 13,
+                            ),
                           ),
                         ],
                       ),
-                      child: Icon(workout.icon, color: Colors.white, size: 28),
                     ),
-                    const SizedBox(width: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          workout.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          workout.subtitle,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Icon(
+
+                    // Arrow Icon
+                    const Icon(
                       Icons.arrow_forward_ios_rounded,
-                      color: Colors.white.withOpacity(0.5),
-                      size: 18,
+                      color: Colors.white70,
+                      size: 16,
                     ),
                   ],
                 ),
@@ -181,7 +212,6 @@ class HomeScreen extends StatelessWidget {
 }
 
 // --- DATA MODEL ---
-
 class Workout {
   final String title;
   final String subtitle;
@@ -198,12 +228,13 @@ class Workout {
   });
 }
 
+// Data List (Updated Colors for Blue Theme)
 final List<Workout> myWorkouts = [
   Workout(
     title: 'Chest & Triceps',
     subtitle: 'Width & Power',
     icon: Icons.fitness_center,
-    color: Colors.redAccent, // Changed to match theme
+    color: Colors.blueAccent, // Updated to match blue theme
     exercises: [
       'Warmup: Pushups - 2 x 20',
       'Dumbbell Bench Press - 3 x 12',
@@ -216,7 +247,7 @@ final List<Workout> myWorkouts = [
     title: 'Back & Biceps',
     subtitle: 'Thickness Focus',
     icon: Icons.accessibility_new,
-    color: Colors.orangeAccent, // Changed to match theme
+    color: Colors.cyan, // Updated to match blue theme
     exercises: [
       'Warmup: Band Pull-aparts',
       'One Arm Dumbbell Row - 4 x 10',
@@ -229,7 +260,7 @@ final List<Workout> myWorkouts = [
     title: 'Leg Day',
     subtitle: 'Don\'t skip this.',
     icon: Icons.directions_run,
-    color: Colors.amberAccent, // Changed to match theme
+    color: Colors.purpleAccent, // Updated to match blue theme
     exercises: [
       'Goblet Squats - 4 x 12',
       'Dumbbell Lunges - 3 x 20 steps',
